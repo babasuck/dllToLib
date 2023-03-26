@@ -45,6 +45,8 @@ def main():
                     continue
             with open(def_file, "r") as f:
                 exports = parse_funName(f.read())
+            if len(exports) == 0:
+                continue
             with open(def_file, "w") as f:
                 f.write("EXPORTS\n")
                 for export in exports:
@@ -68,7 +70,7 @@ def main():
             if count % 10 == 0:
                 print(f"Progress {count} / {len([i for i in os.listdir(directory) if i.endswith('.dll')])}", end="\r", flush=True)
 
-    print("Finished.")
+    print("\nFinished.")
 
 
 if __name__ == "__main__":
