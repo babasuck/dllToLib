@@ -28,6 +28,7 @@ def parse_funName(input_text):
 def main():
     os.chdir(directory)
     count = 0
+    empty_count = 0
     for file in os.listdir(directory):
         os.chdir(directory)
         if file.endswith(".dll"):
@@ -46,6 +47,8 @@ def main():
             with open(def_file, "r") as f:
                 exports = parse_funName(f.read())
             if len(exports) == 0:
+                os.remove(def_file)
+                empty_count += 1
                 continue
             with open(def_file, "w") as f:
                 f.write("EXPORTS\n")
@@ -70,7 +73,8 @@ def main():
             if count % 10 == 0:
                 print(f"Progress {count} / {len([i for i in os.listdir(directory) if i.endswith('.dll')])}", end="\r", flush=True)
 
-    print("\nFinished.")
+    print("\nFinished.\n"
+          f"Empty count - {empty_count}\n")
 
 
 if __name__ == "__main__":
