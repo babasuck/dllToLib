@@ -33,22 +33,32 @@ def main():
         if file.endswith(".dll"):
             def_file = _libdir + file[:-4] + ".def"
             inc_file = _incdir + file[:-4] + ".inc"
+            #print(inc_file)
             res = subprocess.run(f"dumpbin /nologo /exports {file} > {def_file}", shell=True)
-            if res.returncode == 1:
-                print("Make sure set path to dumpbin.exe to PATH variable.")
-                exit(-1)
+            if res.returncode != 0:
+                if res.returncode == 1:
+                    print("Make sure set path to dumpbin.exe to PATH variable.")
+                    exit(-1)
+                else:
+                    print(f"Error with {def_file}")
+                    count += 1
+                    continue
             with open(def_file, "r") as f:
                 exports = parse_funName(f.read())
             with open(def_file, "w") as f:
                 f.write("EXPORTS\n")
                 for export in exports:
-
                     f.write(export + "\n")
             lib_file = _libdir + file[:-4] + ".lib"
             res = subprocess.run(f"lib /nologo /def:{def_file} /out:{lib_file} > nul", shell=True)
-            if res.returncode == 1:
-                print("Make sure set path to lib.exe to PATH variable.")
-                exit(-1)
+            if res.returncode != 0:
+                if res.returncode == 1:
+                    print("Make sure set path to lib.exe to PATH variable.")
+                    exit(-1)
+                else:
+                    print(f"Error with {lib_file}")
+                    count += 1
+                    continue
             with open(inc_file, "w") as f:
                 for export in exports:
                     f.write("extern __imp_" + export + ":qword \n" + export + " TEXTEQU <__imp_" + export + ">\n")
@@ -73,7 +83,7 @@ if __name__ == "__main__":
     print(_libdir)
     _incdir = sys.argv[3] + '\\'
     print(_incdir)
-    os.system('chcp 65001')
+    #os.system('chcp 65001')
     try:
         pass
         main()
