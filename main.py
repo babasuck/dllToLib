@@ -37,10 +37,10 @@ def main():
             res = subprocess.run(f"dumpbin /nologo /exports {file} > {def_file}", shell=True)
             if res.returncode != 0:
                 if res.returncode == 1:
-                    print("Make sure set path to dumpbin.exe to PATH variable.")
+                    print("Make sure set path to dumpbin.exe to PATH variable.\n")
                     exit(-1)
                 else:
-                    print(f"Error with {def_file}")
+                    print(f"Error with {def_file}\n")
                     count += 1
                     continue
             with open(def_file, "r") as f:
@@ -53,10 +53,10 @@ def main():
             res = subprocess.run(f"lib /nologo /def:{def_file} /out:{lib_file} > nul", shell=True)
             if res.returncode != 0:
                 if res.returncode == 1:
-                    print("Make sure set path to lib.exe to PATH variable.")
+                    print("Make sure set path to lib.exe to PATH variable.\n")
                     exit(-1)
                 else:
-                    print(f"Error with {lib_file}")
+                    print(f"Error with {lib_file}\n")
                     count += 1
                     continue
             with open(inc_file, "w") as f:
