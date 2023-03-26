@@ -1,5 +1,5 @@
 """
-DllToLib&Inc v1.2 25.03.2023
+DllToLib&Inc v1.3 26.03.2023
 (c) Mantissa для wasm.in
 """
 
@@ -33,8 +33,10 @@ def main():
         if file.endswith(".dll"):
             def_file = _libdir + file[:-4] + ".def"
             inc_file = _incdir + file[:-4] + ".inc"
-            #print(inc_file)
-            subprocess.run(f"dumpbin /nologo /exports {file} > {def_file}", shell=True)
+            res = subprocess.run(f"dumpbin /nologo /exports {file} > {def_file}", shell=True)
+            if res.returncode != 0:
+                print("Make sure set path to dumpbin.exe to PATH variable.")
+                exit(-1)
             with open(def_file, "r") as f:
                 exports = parse_funName(f.read())
             with open(def_file, "w") as f:
@@ -42,21 +44,24 @@ def main():
                 for export in exports:
                     f.write(export + "\n")
             lib_file = _libdir + file[:-4] + ".lib"
-            subprocess.run(f"lib /nologo /def:{def_file} /out:{lib_file} > nul", shell=True)
+            res = subprocess.run(f"lib /nologo /def:{def_file} /out:{lib_file} > nul", shell=True)
+            if res.returncode != 0:
+                print("Make sure set path to lib.exe to PATH variable.")
+                exit(-1)
             with open(inc_file, "w") as f:
                 for export in exports:
                     f.write("extern __imp_" + export + ":qword \n" + export + " TEXTEQU <__imp_" + export + ">\n")
             os.chdir(_libdir)
             os.remove(def_file)
             count += 1
-            if count % 100 == 0:
-                print(f"Progress {count} / {len([i for i in os.listdir(directory) if i.endswith('.dll')])}\n")
+            if count % 10 == 0:
+                print(f"Progress {count} / {len([i for i in os.listdir(directory) if i.endswith('.dll')])}", end="\r", flush=True)
 
     print("Finished.")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         print("Select parameters correctly:\n"
               "1 - path to Dll \n"
               "2 - path to save .lib\n"
