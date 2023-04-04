@@ -35,7 +35,7 @@ def main():
             def_file = _libdir + file[:-4] + ".def"
             inc_file = _incdir + file[:-4] + ".inc"
             #print(inc_file)
-            res = subprocess.run(f"dumpbin /nologo /exports {file} > {def_file}", shell=True)
+            res = subprocess.run(f"dumpbin /nologo /exports {directory}/{file} > {def_file}", shell=True)
             if res.returncode != 0:
                 if res.returncode == 1:
                     print("Make sure set path to dumpbin.exe to PATH variable.\n")
