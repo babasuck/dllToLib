@@ -55,7 +55,7 @@ def main():
                 for export in exports:
                     f.write(export + "\n")
             lib_file = _libdir + file[:-4] + ".lib"
-            res = subprocess.run(f"lib /nologo /def:{def_file} /out:{lib_file} > nul", shell=True)
+            res = subprocess.run(f"lib /nologo /def:{def_file} /MACHINE:x64 /out:{lib_file} > nul", shell=True)
             if res.returncode != 0:
                 if res.returncode == 1:
                     print("Make sure set path to lib.exe to PATH variable.\n")
