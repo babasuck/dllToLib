@@ -52,8 +52,18 @@ def main():
                 continue
             with open(def_file, "w") as f:
                 f.write("EXPORTS\n")
-                for export in exports:
-                    f.write(export + "\n")
+                num = 1
+                if (len(sys.argv) == 5):
+                    if sys.argv[4] == 'shadow':
+                        for export in exports:
+                            splitted = re.split(' ', export)
+                            print(splitted[0])
+                            line = splitted[0] + " " + splitted[1] + " " + splitted[2] + "@" + str(num) + "\n"
+                            f.write(line)
+                            num = num + 1
+                else:
+                    for export in exports:
+                        f.write(export + "\n")
             lib_file = _libdir + file[:-4] + ".lib"
             res = subprocess.run(f"lib /nologo /def:{def_file} /MACHINE:x64 /out:{lib_file} > nul", shell=True)
             if res.returncode != 0:
