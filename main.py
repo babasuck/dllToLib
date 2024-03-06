@@ -57,7 +57,6 @@ def main():
                     if sys.argv[4] == 'shadow':
                         for export in exports:
                             splitted = re.split(' ', export)
-                            print(splitted[0])
                             line = splitted[0] + " " + splitted[1] + " " + splitted[2] + "@" + str(num) + "\n"
                             f.write(line)
                             num = num + 1
