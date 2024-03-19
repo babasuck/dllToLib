@@ -35,9 +35,16 @@ def main():
             def_file = _libdir + file[:-4] + ".def"
             inc_file = _incdir + file[:-4] + ".inc"
             #print(inc_file)
-            res = subprocess.run(f"dumpbin /nologo /exports {directory}/{file} > {def_file}", shell=True)
-            if res.returncode != 0:
-                if res.returncode == 1:
+            try:
+                subprocess.run(f"dumpbin /nologo /exports {directory}/{file} > {def_file}",
+                                     shell=True,
+                                     check=True,
+                                     stderr=subprocess.PIPE,
+                                     text=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Error - {e.stderr}\n")
+
+                if e.returncode == 1:
                     print("Make sure set path to dumpbin.exe to PATH variable.\n")
                     exit(-1)
                 else:
@@ -55,9 +62,15 @@ def main():
                 for export in exports:
                     f.write(export + "\n")
             lib_file = _libdir + file[:-4] + ".lib"
-            res = subprocess.run(f"lib /nologo /def:{def_file} /MACHINE:x64 /out:{lib_file} > nul", shell=True)
-            if res.returncode != 0:
-                if res.returncode == 1:
+            try:
+                subprocess.run(f"lib /nologo /def:{def_file} /MACHINE:x64 /out:{lib_file} > nul",
+                                     shell=True,
+                                     check=True,
+                                     stderr=subprocess.PIPE,
+                                     text=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Error - {e.stderr}\n")
+                if e.returncode == 1:
                     print("Make sure set path to lib.exe to PATH variable.\n")
                     exit(-1)
                 else:
@@ -84,6 +97,18 @@ if __name__ == "__main__":
               "2 - path to save .lib\n"
               "3 - path to save .inc\n")
         exit(-1)
+    proc = subprocess.run(f"dumpbin /logo", shell=True)
+    if proc.returncode != 0:
+        print("Make sure set path to dumpbin.exe to PATH variable.\n")
+        exit(-1)
+    else:
+        print("dumpbin is preset in PATH")
+    proc = subprocess.run(f"lib /logo", shell=True)
+    if proc.returncode != 0:
+        print("Make sure set path to lib.exe to PATH variable.\n")
+        exit(-1)
+    else:
+        print("lib is preset in PATH")
     directory = sys.argv[1] + '\\'
     _libdir = sys.argv[2] + '\\'
     print(_libdir)
